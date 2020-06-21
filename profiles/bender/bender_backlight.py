@@ -7,8 +7,10 @@ import math
 from multiprocessing import Process
 
 #parameters list: pin, count, brightness
-eyes_leds = (board.D21, 1, 1) # two eyes in parallel
-mouth_leds = (board.D18, 18, 0.5)
+eyes_pin = board.D13
+mouth_pin = board.D12
+eyes_leds = (eyes_pin, 1, 1) # two eyes in parallel
+mouth_leds = (mouth_pin, 18, 0.5)
 
 strips = {
     'EYES': eyes_leds,
@@ -34,7 +36,8 @@ def fill_pixels(pixels, color):
     pixels.show()
 
 def blink(pixels, pin, mode):
-    if pin != board.D21:
+    global eyes_pin
+    if pin != eyes_pin:
         print('Teeth do not support talk command!')
         return
 
@@ -58,7 +61,8 @@ def blink(pixels, pin, mode):
     t += period * 4
 
 def talk(pixels, pin, mode):
-    if pin != board.D18:
+    global mouth_pin
+    if pin != mouth_pin:
         print('Eyes do not support talk command!')
         return
 
@@ -93,7 +97,8 @@ def talk(pixels, pin, mode):
         t += period * 4
 
 def sin_cos_graph(pixels, pin, func, back_color, front_color):
-    if pin != board.D18:
+    global mouth_pin
+    if pin != mouth_pin:
         print('Eyes do not support talk command!')
         return
     if func != math.sin and func != math.cos:
