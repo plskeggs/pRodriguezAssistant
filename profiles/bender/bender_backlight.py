@@ -7,7 +7,8 @@ import math
 from multiprocessing import Process
 
 #parameters list: pin, count, brightness
-eyes_pin = board.D13
+#GPIO10, GPIO12, GPIO18 or GPIO21
+eyes_pin = board.D10
 mouth_pin = board.D12
 eyes_leds = (eyes_pin, 1, 1) # two eyes in parallel
 mouth_leds = (mouth_pin, 18, 0.5)
