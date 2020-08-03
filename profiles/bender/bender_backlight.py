@@ -14,7 +14,7 @@ eyes_leds = (eyes_pin, 1, 1) # two eyes in parallel
 mouth_leds = (mouth_pin, 18, 0.5)
 
 strips = {
-    'EYES': eyes_leds,
+#    'EYES': eyes_leds,
     'MOUTH': mouth_leds
 }
 
