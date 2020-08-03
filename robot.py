@@ -41,7 +41,7 @@ def main():
     profile.vol_ctrl.set_speaker_volume(profile.vol_ctrl.speaker_volume)
 
     kill_pocketsphinx()
-    profile.m_player.send_command('stop')
+    #profile.m_player.send_command('stop')
 
     if profile.eyes_bl:
         profile.eyes_bl.exec_cmd('OFF')
@@ -122,7 +122,7 @@ def sleep_task():
             sleep_counter_inc()
             if sleep_counter >= IDLE_TIME:
                 if not is_sleeping:
-                    if not profile.m_player.musicIsPlaying:
+                    if not False: # profile.m_player.musicIsPlaying:
                         if profile.eyes_bl:
                             profile.eyes_bl.exec_cmd('OFF')
                         profile.a_player.play_answer('fall asleep')
@@ -175,7 +175,7 @@ def find_keyphrase(sphinx_proc):
     if (profile.name in utt):
         if sleep_enabled:
             sleep_counter_reset()
-        if profile.m_player.musicIsPlaying:
+        if False: # profile.m_player.musicIsPlaying:
             if('pause' in utt or 'stop' in utt or profile.vol_ctrl.speaker_volume == 0):
                 profile.m_player.send_command('pause')
                 keyphrase_found = True
@@ -236,7 +236,7 @@ def conversation_mode(sphinx_proc):
             after_action()
 
         if answer != 'shutdown' or answer != 'reboot':
-            if profile.m_player.musicIsPlaying:
+            if False: # profile.m_player.musicIsPlaying:
                 profile.m_player.send_command('resume')
 
     if sleep_enabled:
