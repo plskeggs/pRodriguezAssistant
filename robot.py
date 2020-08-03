@@ -150,7 +150,8 @@ def wake_up():
 def get_utterance(sphinx_proc):
     retcode = sphinx_proc.returncode
     utt = sphinx_proc.stdout.readline().decode('utf8').rstrip().lower()
-    print('utterance = ' + utt)
+    if len(utt):
+        print('utterance = ' + utt)
     return utt
 
 def find_keyphrase(sphinx_proc):
@@ -160,7 +161,7 @@ def find_keyphrase(sphinx_proc):
     global fsm_state
 
     keyphrase_found = False
-    print('Start mode:')
+    #print('Start mode:')
 
     utt = get_utterance(sphinx_proc)
 
