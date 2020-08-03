@@ -9,7 +9,7 @@ class AnswerPlayer:
         self.mic_gain = 40
         self.mic_set(self.mic_gain)
         self.audio_path = audio_path
-        self.eyes_bl = eyes_bl
+        #self.eyes_bl = eyes_bl
         self.mouth_bl = mouth_bl
         if self.mouth_bl:
             self.mouth_bl.exec_cmd('OFF')

@@ -126,7 +126,8 @@ if recognize_lang == 'ru':
 
 if backlight_enabled:
     from profiles.bender.bender_backlight import BacklightControl
-    eyes_bl = BacklightControl('EYES')
+    #eyes_bl = BacklightControl('EYES')
+    eyes_bl = None
     mouth_bl = BacklightControl('MOUTH')
 else:
     eyes_bl = None
