@@ -3,9 +3,9 @@
 import subprocess
 
 modes = {
-    'quiet': 80,
-    'normal': 160,
-    'loud': 255
+    'quiet': 20480,
+    'normal': 40960,
+    'loud': 65535
 }
 
 speaker_volume = 20
@@ -22,6 +22,6 @@ def change_speaker_volume(value):
     set_speaker_volume(speaker_volume)
 
 def set_speaker_volume(value):
-    amixer_exe = "amixer -q -c 1 sset 'PCM' " + str(value)
+    amixer_exe = "amixer -q sset 'Master' " + str(value)
     p = subprocess.Popen(["%s" % amixer_exe], shell=True, stdout=subprocess.PIPE)
     code = p.wait()

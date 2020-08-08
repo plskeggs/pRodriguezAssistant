@@ -18,6 +18,7 @@ class AnswerPlayer:
 
     def play_wav(self, path, bl_command):
         aplay_exe = 'aplay -Dplug:default ' + str(path)
+        print(aplay_exe)
         aplay_proc = subprocess.Popen(["%s" % aplay_exe], shell=True, stdout=subprocess.PIPE)
 
         eyes_bl_proc = None

@@ -18,7 +18,7 @@ sleep_counter = 0
 sleep_counter_lock = threading.Lock()
 
 UPS_TASK_ENABLED = True
-UPS_TASK_INTERVAL = 2
+UPS_TASK_INTERVAL = 5
 if UPS_TASK_ENABLED: from common import ups_lite
 
 fsm_state = 1
@@ -38,31 +38,52 @@ def main():
     global fsm_state
     global sleep_enabled
 
+    print("pRodriguezAssistant Starting Up...")
+    print("set speaker volume...")
     profile.vol_ctrl.set_speaker_volume(profile.vol_ctrl.speaker_volume)
 
+    print("kill pocketsphinx...")
     kill_pocketsphinx()
+    print("stop music player...")
     #profile.m_player.send_command('stop')
 
+    print("turn eyes off...")
     if profile.eyes_bl:
         profile.eyes_bl.exec_cmd('OFF')
     time.sleep(0.15)
 
+    print("turn mouth off...")
+    if profile.mouth_bl:
+        profile.mouth_bl.exec_cmd('OFF')
+    time.sleep(0.15)
+
+    print("start UPS task...")
     if UPS_TASK_ENABLED:
         ups_thread = threading.Thread(target=ups_task)
         ups_thread.start()
 
+    print("start sleep task...")
     if SLEEP_TASK_ENABLED:
         profile.sleep_enable_set = sleep_enable_set
         sleep_thread = threading.Thread(target=sleep_task)
         sleep_thread.daemon = True
         sleep_thread.start()
 
+    print("start pocketsphinx...")
     sphinx_proc = subprocess.Popen(["%s" % profile.speech_recognizer.cmd_line], shell=True, stdout=subprocess.PIPE)
     print(["%s" % profile.speech_recognizer.cmd_line])
 
+    print("turn on eyes...")
     if profile.eyes_bl:
         profile.eyes_bl.exec_cmd('ON')
 
+    print("turn on mouth...")
+    if profile.mouth_bl:
+        profile.mouth_bl.exec_cmd('ON')
+
+    wake_up()
+
+    print("start speech processing loop...")
     while True:
         if (fsm_state == 1):
             if find_keyphrase(sphinx_proc):
@@ -78,18 +99,25 @@ def main():
         else:
             continue
 
+    print("preparing to exit...")
     main_thread_is_running = False
+    print("kill pocketsphinx...")
     kill_pocketsphinx()
-    profile.m_player.send_command('stop')
 
+    print("stop music player...")
+    #profile.m_player.send_command('stop')
+
+    print("turn eyes off...")
     if profile.eyes_bl:
         profile.eyes_bl.exec_cmd('OFF')
     time.sleep(3)
 
     if (fsm_state == 4):
+        print("reboot!")
         power.reboot()
 
     if (fsm_state == 5):
+        print("shutdown.")
         power.shutdown()
 
     sys.exit(0)
@@ -110,6 +138,12 @@ def ups_task():
                 power.shutdown()
         prev_voltage = voltage
         prev_capacity = capacity
+        print("voltage %f" % voltage)
+        print("capacity %d" % capacity)
+        if ups_lite.adapter_in():
+            print("power adapter plugged in")
+        else:
+            print("power adapter unplugged")
 
 def sleep_task():
     global is_sleeping
