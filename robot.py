@@ -87,10 +87,6 @@ def main():
     if profile.eyes_bl:
         profile.eyes_bl.exec_cmd('ON')
 
-    print("turn on mouth...")
-    if profile.mouth_bl:
-        profile.mouth_bl.exec_cmd('ON')
-
     wake_up()
 
     print("start speech processing loop...")
