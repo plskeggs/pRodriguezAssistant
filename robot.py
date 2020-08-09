@@ -8,6 +8,10 @@ import sys
 from common import power
 from profiles.bender import bender as profile
 
+import signal
+
+
+signal.signal(signal.SIGINT, signal_handler)
 main_thread_is_running = True
 
 SLEEP_TASK_ENABLED = True
@@ -28,6 +32,11 @@ fsm_transition = {
     'reboot': 4,
     'shutdown': 5
 }
+
+def signal_handler(sig, frame):
+    print('You pressed ctrl-c!')
+    time.sleep(1)
+    main_thread_is_running = False
 
 def sleep_enable_set(val):
     global sleep_enabled
@@ -84,7 +93,7 @@ def main():
     wake_up()
 
     print("start speech processing loop...")
-    while True:
+    while main_thread_is_running:
         if (fsm_state == 1):
             if find_keyphrase(sphinx_proc):
                 conversation_mode(sphinx_proc)
