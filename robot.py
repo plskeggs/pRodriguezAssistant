@@ -33,6 +33,7 @@ fsm_transition = {
 }
 
 def signal_handler(sig, frame):
+    global main_thread_is_running
     print('You pressed ctrl-c!')
     time.sleep(1)
     main_thread_is_running = False
@@ -147,12 +148,13 @@ def ups_task():
                 power.shutdown()
         prev_voltage = voltage
         prev_capacity = capacity
-        print("voltage %f" % voltage)
-        print("capacity %d" % capacity)
-        if ups_lite.adapter_in():
-            print("power adapter plugged in")
-        else:
-            print("power adapter unplugged")
+        if False:
+            print("voltage %f" % voltage)
+            print("capacity %d" % capacity)
+            if ups_lite.adapter_in():
+                print("power adapter plugged in")
+            else:
+                print("power adapter unplugged")
 
 def sleep_task():
     global is_sleeping
