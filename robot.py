@@ -11,7 +11,6 @@ from profiles.bender import bender as profile
 import signal
 
 
-signal.signal(signal.SIGINT, signal_handler)
 main_thread_is_running = True
 
 SLEEP_TASK_ENABLED = True
@@ -47,6 +46,7 @@ def main():
     global fsm_state
     global sleep_enabled
 
+    signal.signal(signal.SIGINT, signal_handler)
     print("pRodriguezAssistant Starting Up...")
     print("set speaker volume...")
     profile.vol_ctrl.set_speaker_volume(profile.vol_ctrl.speaker_volume)
