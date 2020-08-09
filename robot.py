@@ -10,7 +10,7 @@ from profiles.bender import bender as profile
 
 import signal
 
-
+is_plugged_in = False
 main_thread_is_running = True
 
 SLEEP_TASK_ENABLED = True
@@ -129,6 +129,7 @@ def main():
     sys.exit(0)
 
 def ups_task():
+    global is_plugged_in
     global main_thread_is_running
     prev_voltage = ups_lite.read_voltage()
     prev_capacity = ups_lite.read_capacity()
@@ -144,6 +145,10 @@ def ups_task():
                 power.shutdown()
         prev_voltage = voltage
         prev_capacity = capacity
+        if is_plugged_in != ups_lite.adapter_in():
+            is_plugged_in = ups_lite.adapter_in()
+            if is_plugged_in:
+                profile.a_player.play_answer('electricity')
         if False:
             print("voltage %f" % voltage)
             print("capacity %d" % capacity)
