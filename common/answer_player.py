@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # project: pRodriguezAssistant
 import subprocess
+import random
 import time
 
 class AnswerPlayer:
@@ -37,11 +38,6 @@ class AnswerPlayer:
             eyes_bl_proc.terminate()
             self.eyes_bl.exec_cmd('ON')
 
-    def play_random(self):
-        items = self.audio_files.items()
-        answer = items[int(round(time.time() * 1000)) % len(items)]
-        print(answer)
-
     def play_answer(self, command):
         answer = self.audio_files.get(command)
         if answer != None:
@@ -64,6 +60,15 @@ class AnswerPlayer:
                 self.mouth_bl.exec_cmd('OFF')
         else:
             print('No answer to this question!')
+
+    def play_random(self):
+        try:
+            item_list = list(self.audio_files.items())
+            answer = random.choice(item_list)
+            print(answer)
+            self.play_answer(answer[0])
+        except Exception as err:
+            print("exception: ", err)
 
     def mic_set(self, val):
         exe = "amixer -q -c 1 sset 'Mic' " + str(val)
