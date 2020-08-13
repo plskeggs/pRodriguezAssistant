@@ -4,6 +4,7 @@
 import subprocess
 import time
 import threading
+import random
 import sys
 from common import power
 from profiles.bender import bender as profile
@@ -92,11 +93,11 @@ def main():
     print("start speech processing loop...")
     while main_thread_is_running:
         if (fsm_state == 1):
-            if find_keyphrase(sphinx_proc):
-                conversation_mode(sphinx_proc)
-            else:
-                time.sleep(5)
-                profile.a_player.play_random()
+            #if find_keyphrase(sphinx_proc):
+            #    conversation_mode(sphinx_proc)
+            #else:
+            time.sleep(random.randint(5,15))
+            profile.a_player.play_random()
         elif (fsm_state == 2):
             conversation_mode(sphinx_proc)
         elif (fsm_state == 3):
