@@ -80,7 +80,7 @@ def main():
         sleep_thread.start()
 
     print("start pocketsphinx...")
-    sphinx_proc = subprocess.Popen(["%s" % profile.speech_recognizer.cmd_line], shell=True, stdout=subprocess.PIPE)
+    #sphinx_proc = subprocess.Popen(["%s" % profile.speech_recognizer.cmd_line], shell=True, stdout=subprocess.PIPE)
     print(["%s" % profile.speech_recognizer.cmd_line])
 
     print("turn on eyes...")
@@ -94,6 +94,9 @@ def main():
         if (fsm_state == 1):
             if find_keyphrase(sphinx_proc):
                 conversation_mode(sphinx_proc)
+            else:
+                time.sleep(5)
+                profile.a_player.play_random()
         elif (fsm_state == 2):
             conversation_mode(sphinx_proc)
         elif (fsm_state == 3):

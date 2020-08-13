@@ -37,6 +37,11 @@ class AnswerPlayer:
             eyes_bl_proc.terminate()
             self.eyes_bl.exec_cmd('ON')
 
+    def play_random(self):
+        items = self.audio_files.items()
+        answer = items[int(round(time.time() * 1000)) % len(items)]
+        print(answer)
+
     def play_answer(self, command):
         answer = self.audio_files.get(command)
         if answer != None:
