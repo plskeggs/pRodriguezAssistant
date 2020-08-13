@@ -1,0 +1,15 @@
+Unit]
+
+Description=Bender
+
+After=multi-user.target
+
+[Service]
+
+Type=idle
+
+ExecStart=/usr/bin/python3 /home/pi/src/pRodriguez/robot.py
+
+[Install]
+
+WantedBy=multi-user.target
