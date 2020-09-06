@@ -14,6 +14,8 @@ import signal
 is_plugged_in = False
 main_thread_is_running = True
 
+MPD_ENABLED = False
+SPHINX_ENABLED = True
 SLEEP_TASK_ENABLED = True
 IDLE_TIME = 60 # in minutes, 2 - minimum
 sleep_enabled = True
@@ -53,10 +55,13 @@ def main():
     print("set speaker volume...")
     profile.vol_ctrl.set_speaker_volume(profile.vol_ctrl.speaker_volume)
 
-    print("kill pocketsphinx...")
-    kill_pocketsphinx()
-    print("stop music player...")
-    #profile.m_player.send_command('stop')
+    if SPHINX_ENABLED:
+        print("kill pocketsphinx...")
+        kill_pocketsphinx()
+
+    if MPD_ENABLED:
+        print("stop music player...")
+        profile.m_player.send_command('stop')
 
     print("turn eyes off...")
     if profile.eyes_bl:
@@ -80,9 +85,10 @@ def main():
         sleep_thread.daemon = True
         sleep_thread.start()
 
-    print("start pocketsphinx...")
-    #sphinx_proc = subprocess.Popen(["%s" % profile.speech_recognizer.cmd_line], shell=True, stdout=subprocess.PIPE)
-    print(["%s" % profile.speech_recognizer.cmd_line])
+    if SPHINX_ENABLED:
+        print("start pocketsphinx...")
+        sphinx_proc = subprocess.Popen(["%s" % profile.speech_recognizer.cmd_line], shell=True, stdout=subprocess.PIPE)
+        print(["%s" % profile.speech_recognizer.cmd_line])
 
     print("turn on eyes...")
     if profile.eyes_bl:
@@ -93,13 +99,15 @@ def main():
     print("start speech processing loop...")
     while main_thread_is_running:
         if (fsm_state == 1):
-            #if find_keyphrase(sphinx_proc):
-            #    conversation_mode(sphinx_proc)
-            #else:
-            time.sleep(random.randint(3,10))
-            profile.a_player.play_random()
+            if SPHINX_ENABLED:
+                if find_keyphrase(sphinx_proc):
+                    conversation_mode(sphinx_proc)
+            else:
+                time.sleep(random.randint(3,10))
+                profile.a_player.play_random()
         elif (fsm_state == 2):
-            conversation_mode(sphinx_proc)
+            if SPHINX_ENABLED:
+                conversation_mode(sphinx_proc)
         elif (fsm_state == 3):
             break
         elif (fsm_state == 4):
@@ -111,11 +119,13 @@ def main():
 
     print("preparing to exit...")
     main_thread_is_running = False
-    print("kill pocketsphinx...")
-    kill_pocketsphinx()
+    if SPHINX_ENABLED:
+        print("kill pocketsphinx...")
+        kill_pocketsphinx()
 
-    print("stop music player...")
-    #profile.m_player.send_command('stop')
+    if MPD_ENABLED:
+        print("stop music player...")
+        profile.m_player.send_command('stop')
 
     print("turn eyes off...")
     if profile.eyes_bl:
@@ -172,7 +182,7 @@ def sleep_task():
             sleep_counter_inc()
             if sleep_counter >= IDLE_TIME:
                 if not is_sleeping:
-                    if not False: # profile.m_player.musicIsPlaying:
+                    if MPD_ENABLED and not profile.m_player.musicIsPlaying:
                         if profile.eyes_bl:
                             profile.eyes_bl.exec_cmd('OFF')
                         profile.a_player.play_answer('fall asleep')
@@ -225,7 +235,7 @@ def find_keyphrase(sphinx_proc):
     if (profile.name in utt):
         if sleep_enabled:
             sleep_counter_reset()
-        if False: # profile.m_player.musicIsPlaying:
+        if MPD_ENABLED and profile.m_player.musicIsPlaying:
             if('pause' in utt or 'stop' in utt or profile.vol_ctrl.speaker_volume == 0):
                 profile.m_player.send_command('pause')
                 keyphrase_found = True
@@ -286,7 +296,7 @@ def conversation_mode(sphinx_proc):
             after_action()
 
         if answer != 'shutdown' or answer != 'reboot':
-            if False: # profile.m_player.musicIsPlaying:
+            if MPD_ENABLED and profile.m_player.musicIsPlaying:
                 profile.m_player.send_command('resume')
 
     if sleep_enabled:
