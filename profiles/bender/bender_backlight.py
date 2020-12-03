@@ -8,11 +8,14 @@ from multiprocessing import Process
 
 #parameters list: pin, count, brightness
 #GPIO10, GPIO12, GPIO18 or GPIO21
-eyes_pin = board.D10
 mouth_pin = board.D12
-eyes_leds = (eyes_pin, 1, 1) # two eyes in parallel
-mouth_leds = (mouth_pin, 18, 0.5)
-all_leds = (mouth_pin, 19, 1) # combining both sets
+eyes_pin = board.D10
+mouth_section = 0
+eyes_section = 1
+full_section = 2
+mouth_leds = (mouth_pin, 18, 0.5, mouth_section)
+eyes_leds = (mouth_pin, 1, 1, eyes_section) # two eyes in parallel
+all_leds = (mouth_pin, 19, 1, full_section) # combining both sets
 
 strips = {
     'EYES': eyes_leds,
@@ -34,8 +37,9 @@ revert_row1 = {0: 5, 1: 4, 2: 3, 3: 2, 4: 1, 5: 0}
 
 is_talking = False
 
-def fill_pixels(pixels, pin, color):
-    if pin == eyes_pin:
+def fill_pixels(pixels, section, color):
+    global eyes_section
+    if section == eyes_section:
         color = tuple(int(i * eye_leds[2]) for i in color)
         pixels[mouth_leds[1]] = color
     else:
@@ -44,15 +48,17 @@ def fill_pixels(pixels, pin, color):
             pixels[i] = color
     print("pixels = ")
     print(pixels)
+    print("section = ")
+    print(section)
     print("pin = ")
     print(pin)
     print("color = ")
     print(color)
     pixels.show()
 
-def blink(pixels, pin, mode):
-    global eyes_pin
-    if pin != eyes_pin:
+def blink(pixels, section, mode):
+    global eyes_section
+    if section != eyes_section:
         print('Teeth do not support blink command!')
         return
 
@@ -67,15 +73,15 @@ def blink(pixels, pin, mode):
 
     t = 0
     while t < 30:  # maximum answer length to prevent infinite loop
-        fill_pixels(pixels, pin, phase_1_color)
+        fill_pixels(pixels, section, phase_1_color)
         time.sleep(period)
-        fill_pixels(pixels, pin, phase_2_color)
+        fill_pixels(pixels, section, phase_2_color)
         time.sleep(period)
     t += period * 4
 
-def talk(pixels, pin, mode):
-    global mouth_pin
-    if pin != mouth_pin:
+def talk(pixels, section, mode):
+    global mouth_section
+    if section != mouth_section:
         print('Eyes do not support talk command!')
         return
 
@@ -90,34 +96,34 @@ def talk(pixels, pin, mode):
 
     t = 0
     while t < 30: # maximum answer length to prevent infinite loop
-        fill_pixels(pixels, pin, back_color)
+        fill_pixels(pixels, section, back_color)
         for i in range(6, 12):
             pixels[i] = front_color
         pixels.show()
         time.sleep(period)
 
-        sin_cos_graph(pixels, pin, math.cos, back_color, front_color)
+        sin_cos_graph(pixels, section, math.cos, back_color, front_color)
         time.sleep(period)
 
-        fill_pixels(pixels, pin, back_color)
+        fill_pixels(pixels, section, back_color)
         for i in range(6, 12):
             pixels[i] = front_color
         pixels.show()
         time.sleep(period)
 
-        sin_cos_graph(pixels, pin, math.sin, back_color, front_color)
+        sin_cos_graph(pixels, section, math.sin, back_color, front_color)
         time.sleep(period)
         t += period * 4
 
-def sin_cos_graph(pixels, pin, func, back_color, front_color):
-    global mouth_pin
-    if pin != mouth_pin:
+def sin_cos_graph(pixels, section, func, back_color, front_color):
+    global mouth_section
+    if section != mouth_section:
         print('Eyes do not support talk command!')
         return
     if func != math.sin and func != math.cos:
         print('Only sin() and cos() are supported!')
         return
-    fill_pixels(pixels, pin, back_color)
+    fill_pixels(pixels, section, back_color)
     t = 0
     for x in range(0, 6):
         y = func(t)
@@ -162,5 +168,9 @@ class BacklightControl:
 
     def __init_pixels(self, leds):
         global all_pixels
-        self.pin = leds[0]
+        self.section = leds[3]
+        self.pin = all_leds[0]
+        if all_pixels == None:
+            print("ERROR!!!")
         self.pixels = all_pixels
+
