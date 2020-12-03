@@ -29,7 +29,7 @@ initialized = False
 
 #default_color = (243, 253, 0)
 default_color = (243, 253, 128)
-no_color = (32, 32, 32)
+no_color = (16, 16, 16)
 orange = (255,165,0)
 darkorange = (255,140,0)
 blue = (0,0,255)
@@ -74,11 +74,11 @@ def blink(section, mode):
     if mode == 'plugged_in':
         phase_1_color = darkorange
         phase_2_color = blue
-        period = 0.1
+        period = 0.5
     else:
         phase_1_color = no_color
         phase_2_color = default_color
-        period = 0.25
+        period = 0.5
 
     print("section = ")
     print(section)
