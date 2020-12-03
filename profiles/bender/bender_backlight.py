@@ -21,11 +21,9 @@ strips = {
 
 pin = None
 pixels = None
-
+ORDER = neopixel.GRB
 all_pixels = neopixel.NeoPixel(all_leds[0], all_leds[1], brightness=all_leds[2], auto_write=False,
                                 pixel_order=ORDER)
-
-ORDER = neopixel.GRB
 
 default_color = (243, 253, 0)
 no_color = (0, 0, 0)
