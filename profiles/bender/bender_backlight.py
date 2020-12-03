@@ -93,6 +93,7 @@ def blink(section, mode):
         fill_pixels(section, phase_2_color)
         time.sleep(period)
     t += period * 4
+    fill_pixels(section, no_color)
 
 def talk(section, mode):
     global pixels
