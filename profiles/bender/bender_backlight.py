@@ -44,7 +44,7 @@ def fill_pixels(section, color):
         print("NOT INITIALIZED!")
         return
     if section == eyes_section:
-        color = tuple(int(i * eye_leds[2]) for i in color)
+        color = tuple(int(i * eyes_leds[2]) for i in color)
         pixels[mouth_leds[1]] = color
     else:
         color = tuple(int(i * mouth_leds[2]) for i in color)
