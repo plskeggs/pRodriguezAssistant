@@ -8,7 +8,7 @@ modes = {
     'loud': 255
 }
 
-speaker_volume = 160
+speaker_volume = 205
 VOLUME_STEP = 4
 MAX_VOL = 255 # 40
 

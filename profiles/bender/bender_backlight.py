@@ -42,6 +42,9 @@ def fill_pixels(pixels, pin, color):
         color = tuple(int(i * mouth_leds[2]) for i in color)
         for i in range(0, mouth_leds[1]):
             pixels[i] = color
+    print("pixels = " + pixels)
+    print("pin = " + pin)
+    print("color = " + color)
     pixels.show()
 
 def blink(pixels, pin, mode):
