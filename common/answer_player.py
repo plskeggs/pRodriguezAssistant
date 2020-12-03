@@ -29,6 +29,8 @@ class AnswerPlayer:
         if self.eyes_bl:
             if bl_command == 'PLUGGED_IN':
                 eyes_bl_proc = self.eyes_bl.exec_cmd('BLINK_PLUGGED_IN')
+            else:
+                eyes_bl_proc = self.eyes_bl.exec_cmd('BLINK_NORMAL')
 
         code = aplay_proc.wait()
 
