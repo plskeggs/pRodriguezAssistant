@@ -14,8 +14,8 @@ mouth_section = 0
 eyes_section = 1
 full_section = 2
 mouth_leds = (mouth_pin, 18, 0.5, mouth_section)
-eyes_leds = (mouth_pin, 1, 1, eyes_section) # two eyes in parallel
-all_leds = (mouth_pin, 19, 1, full_section) # combining both sets
+eyes_leds = (mouth_pin, 2, 1, eyes_section) # two eyes in series
+all_leds = (mouth_pin, 20, 1, full_section) # combining both sets
 
 strips = {
     'EYES': eyes_leds,
@@ -27,8 +27,9 @@ pixels = None
 ORDER = neopixel.GRB
 initialized = False
 
-default_color = (243, 253, 0)
-no_color = (0, 0, 0)
+#default_color = (243, 253, 0)
+default_color = (243, 253, 128)
+no_color = (32, 32, 32)
 orange = (255,165,0)
 darkorange = (255,140,0)
 blue = (0,0,255)
@@ -46,6 +47,7 @@ def fill_pixels(section, color):
     if section == eyes_section:
         color = tuple(int(i * eyes_leds[2]) for i in color)
         pixels[mouth_leds[1]] = color
+        pixels[mouth_leds[1] + 1] = color
     else:
         color = tuple(int(i * mouth_leds[2]) for i in color)
         for i in range(0, mouth_leds[1]):
