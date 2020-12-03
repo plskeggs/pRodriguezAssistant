@@ -25,8 +25,8 @@ strips = {
 pin = None
 pixels = None
 ORDER = neopixel.GRB
-all_pixels = neopixel.NeoPixel(all_leds[0], all_leds[1], brightness=all_leds[2], auto_write=False,
-                                pixel_order=ORDER)
+initialized = False
+all_pixels = None
 
 default_color = (243, 253, 0)
 no_color = (0, 0, 0)
@@ -39,6 +39,10 @@ is_talking = False
 
 def fill_pixels(pixels, pin, section, color):
     global eyes_section
+    global initialized
+    if initialized == False:
+        print("NOT INITIALIZED!")
+        return
     if section == eyes_section:
         color = tuple(int(i * eye_leds[2]) for i in color)
         all_pixels[mouth_leds[1]] = color
@@ -58,6 +62,10 @@ def fill_pixels(pixels, pin, section, color):
 
 def blink(pixels, pin, section, mode):
     global eyes_section
+    global initialized
+    if initialized == False:
+        print("NOT INITIALIZED!")
+        return
     if section != eyes_section:
         print('Teeth do not support blink command!')
         return
@@ -89,6 +97,10 @@ def blink(pixels, pin, section, mode):
 
 def talk(pixels, pin, section, mode):
     global mouth_section
+    global initialized
+    if initialized == False:
+        print("NOT INITIALIZED!")
+        return
     if section != mouth_section:
         print('Eyes do not support talk command!')
         return
@@ -188,6 +200,7 @@ class BacklightControl:
 
     def __init_pixels(self, leds):
         global all_pixels
+        global initialized
         self.section = leds[3]
         self.pin = all_leds[0]
         print("leds = ")
@@ -195,7 +208,9 @@ class BacklightControl:
         print("initialized section = %d" % self.section)
         print("set pin =")
         print(self.pin)
-        if all_pixels == None:
-            print("ERROR!!!")
+        if initialized == False:
+            print("initializing NeoPixels!")
+            all_pixels = neopixel.NeoPixel(all_leds[0], all_leds[1], brightness=all_leds[2], auto_write=False, pixel_order=ORDER)
+            initialized = True
         self.pixels = all_pixels
 
