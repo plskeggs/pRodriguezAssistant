@@ -41,20 +41,20 @@ def fill_pixels(pixels, pin, section, color):
     global eyes_section
     if section == eyes_section:
         color = tuple(int(i * eye_leds[2]) for i in color)
-        pixels[mouth_leds[1]] = color
+        all_pixels[mouth_leds[1]] = color
     else:
         color = tuple(int(i * mouth_leds[2]) for i in color)
         for i in range(0, mouth_leds[1]):
-            pixels[i] = color
+            all_pixels[i] = color
     print("pixels = ")
-    print(pixels)
+    print(all_pixels)
     print("pin = ")
     print(pin)
     print("section = ")
     print(section)
     print("color = ")
     print(color)
-    pixels.show()
+    all_pixels.show()
 
 def blink(pixels, pin, section, mode):
     global eyes_section
@@ -71,8 +71,6 @@ def blink(pixels, pin, section, mode):
         phase_2_color = default_color
         period = 0.25
 
-    print("pixels = ")
-    print(pixels)
     print("pin = ")
     print(pin)
     print("section = ")
@@ -118,8 +116,8 @@ def talk(pixels, pin, section, mode):
     while t < 30: # maximum answer length to prevent infinite loop
         fill_pixels(pixels, pin, section, back_color)
         for i in range(6, 12):
-            pixels[i] = front_color
-        pixels.show()
+            all_pixels[i] = front_color
+        all_pixels.show()
         time.sleep(period)
 
         sin_cos_graph(pixels, pin, section, math.cos, back_color, front_color)
@@ -127,8 +125,8 @@ def talk(pixels, pin, section, mode):
 
         fill_pixels(pixels, pin, section, back_color)
         for i in range(6, 12):
-            pixels[i] = front_color
-        pixels.show()
+            all_pixels[i] = front_color
+        all_pixels.show()
         time.sleep(period)
 
         sin_cos_graph(pixels, pin, section, math.sin, back_color, front_color)
@@ -156,9 +154,9 @@ def sin_cos_graph(pixels, pin, section, func, back_color, front_color):
         else:
             i = 2
         c = i * 6 + j
-        pixels[c] = front_color
+        all_pixels[c] = front_color
         t += 1.57
-    pixels.show()
+    all_pixels.show()
 
 class BacklightControl:
     def __init__(self, strip):
@@ -195,7 +193,8 @@ class BacklightControl:
         print("leds = ")
         print(leds)
         print("initialized section = %d" % self.section)
-        print("set pin = %d" % self.pin)
+        print("set pin =")
+        print(self.pin)
         if all_pixels == None:
             print("ERROR!!!")
         self.pixels = all_pixels
