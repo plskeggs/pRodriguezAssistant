@@ -12,14 +12,18 @@ eyes_pin = board.D10
 mouth_pin = board.D12
 eyes_leds = (eyes_pin, 1, 1) # two eyes in parallel
 mouth_leds = (mouth_pin, 18, 0.5)
+all_leds = (mouth_pin, 19, 1) # combining both sets
 
 strips = {
-    # 'EYES': eyes_leds,
+    'EYES': eyes_leds,
     'MOUTH': mouth_leds
 }
 
 pin = None
 pixels = None
+
+all_pixels = neopixel.NeoPixel(all_leds[0], all_leds[1], brightness=all_leds[2], auto_write=False,
+                                pixel_order=ORDER)
 
 ORDER = neopixel.GRB
 
@@ -32,14 +36,20 @@ revert_row1 = {0: 5, 1: 4, 2: 3, 3: 2, 4: 1, 5: 0}
 
 is_talking = False
 
-def fill_pixels(pixels, color):
-    pixels.fill(color)
+def fill_pixels(pixels, pin, color):
+    if pin == eyes_pin:
+        color = tuple(int(i * eye_leds[2]) for i in color)
+        pixels[mouth_leds[1]] = color
+    else:
+        color = tuple(int(i * mouth_leds[2]) for i in color)
+        for i in range(0, mouth_leds[1]):
+            pixels[i] = color
     pixels.show()
 
 def blink(pixels, pin, mode):
     global eyes_pin
     if pin != eyes_pin:
-        print('Teeth do not support talk command!')
+        print('Teeth do not support blink command!')
         return
 
     if mode == 'plugged_in':
@@ -53,11 +63,9 @@ def blink(pixels, pin, mode):
 
     t = 0
     while t < 30:  # maximum answer length to prevent infinite loop
-        pixels.fill(phase_1_color)
-        pixels.show()
+        fill_pixels(pixels, pin, phase_1_color)
         time.sleep(period)
-        pixels.fill(phase_2_color)
-        pixels.show()
+        fill_pixels(pixels, pin, phase_2_color)
         time.sleep(period)
     t += period * 4
 
@@ -78,7 +86,7 @@ def talk(pixels, pin, mode):
 
     t = 0
     while t < 30: # maximum answer length to prevent infinite loop
-        pixels.fill(back_color)
+        fill_pixels(pixels, pin, back_color)
         for i in range(6, 12):
             pixels[i] = front_color
         pixels.show()
@@ -87,7 +95,7 @@ def talk(pixels, pin, mode):
         sin_cos_graph(pixels, pin, math.cos, back_color, front_color)
         time.sleep(period)
 
-        pixels.fill(back_color)
+        fill_pixels(pixels, pin, back_color)
         for i in range(6, 12):
             pixels[i] = front_color
         pixels.show()
@@ -105,7 +113,7 @@ def sin_cos_graph(pixels, pin, func, back_color, front_color):
     if func != math.sin and func != math.cos:
         print('Only sin() and cos() are supported!')
         return
-    pixels.fill(back_color)
+    fill_pixels(pixels, pin, back_color)
     t = 0
     for x in range(0, 6):
         y = func(t)
@@ -130,8 +138,8 @@ class BacklightControl:
         else:
             print("Strip not found!")
         self.backlight_commands = {
-            'ON': lambda: fill_pixels(self.pixels, default_color),
-            'OFF': lambda: fill_pixels(self.pixels, no_color),
+            'ON': lambda: fill_pixels(self.pixels, self.pin, default_color),
+            'OFF': lambda: fill_pixels(self.pixels, self.pin, no_color),
             'TALK': lambda: talk(self.pixels, self.pin, 'normal'),
             'PLUGGED_IN': lambda: talk(self.pixels, self.pin, 'plugged_in'),
             'BLINK_NORMAL': lambda: blink(self.pixels, self.pin, 'normal'),
@@ -149,6 +157,6 @@ class BacklightControl:
             return p
 
     def __init_pixels(self, leds):
+        global all_pixels
         self.pin = leds[0]
-        self.pixels = neopixel.NeoPixel(leds[0], leds[1], brightness=leds[2], auto_write=False,
-                                   pixel_order=ORDER)
+        self.pixels = all_pixels
