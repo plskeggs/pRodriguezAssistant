@@ -37,7 +37,7 @@ revert_row1 = {0: 5, 1: 4, 2: 3, 3: 2, 4: 1, 5: 0}
 
 is_talking = False
 
-def fill_pixels(pixels, section, color):
+def fill_pixels(pixels, pin, section, color):
     global eyes_section
     if section == eyes_section:
         color = tuple(int(i * eye_leds[2]) for i in color)
@@ -48,15 +48,15 @@ def fill_pixels(pixels, section, color):
             pixels[i] = color
     print("pixels = ")
     print(pixels)
-    print("section = ")
-    print(section)
     print("pin = ")
     print(pin)
+    print("section = ")
+    print(section)
     print("color = ")
     print(color)
     pixels.show()
 
-def blink(pixels, section, mode):
+def blink(pixels, pin, section, mode):
     global eyes_section
     if section != eyes_section:
         print('Teeth do not support blink command!')
@@ -67,19 +67,29 @@ def blink(pixels, section, mode):
         phase_2_color = blue
         period = 0.1
     else:
-        back_color = no_color
-        front_color = default_color
+        phase_1_color = no_color
+        phase_2_color = default_color
         period = 0.25
 
+    print("pixels = ")
+    print(pixels)
+    print("pin = ")
+    print(pin)
+    print("section = ")
+    print(section)
+    print("phase_1_color = ")
+    print(phase_1_color)
+    print("phase_2_color = ")
+    print(phase_2_color)
     t = 0
     while t < 30:  # maximum answer length to prevent infinite loop
-        fill_pixels(pixels, section, phase_1_color)
+        fill_pixels(pixels, pin, section, phase_1_color)
         time.sleep(period)
-        fill_pixels(pixels, section, phase_2_color)
+        fill_pixels(pixels, pin, section, phase_2_color)
         time.sleep(period)
     t += period * 4
 
-def talk(pixels, section, mode):
+def talk(pixels, pin, section, mode):
     global mouth_section
     if section != mouth_section:
         print('Eyes do not support talk command!')
@@ -94,28 +104,38 @@ def talk(pixels, section, mode):
         front_color = default_color
         period = 0.25
 
+    print("pixels = ")
+    print(pixels)
+    print("pin = ")
+    print(pin)
+    print("section = ")
+    print(section)
+    print("front_color = ")
+    print(front_color)
+    print("back_color = ")
+    print(back_color)
     t = 0
     while t < 30: # maximum answer length to prevent infinite loop
-        fill_pixels(pixels, section, back_color)
+        fill_pixels(pixels, pin, section, back_color)
         for i in range(6, 12):
             pixels[i] = front_color
         pixels.show()
         time.sleep(period)
 
-        sin_cos_graph(pixels, section, math.cos, back_color, front_color)
+        sin_cos_graph(pixels, pin, section, math.cos, back_color, front_color)
         time.sleep(period)
 
-        fill_pixels(pixels, section, back_color)
+        fill_pixels(pixels, pin, section, back_color)
         for i in range(6, 12):
             pixels[i] = front_color
         pixels.show()
         time.sleep(period)
 
-        sin_cos_graph(pixels, section, math.sin, back_color, front_color)
+        sin_cos_graph(pixels, pin, section, math.sin, back_color, front_color)
         time.sleep(period)
         t += period * 4
 
-def sin_cos_graph(pixels, section, func, back_color, front_color):
+def sin_cos_graph(pixels, pin, section, func, back_color, front_color):
     global mouth_section
     if section != mouth_section:
         print('Eyes do not support talk command!')
@@ -123,7 +143,7 @@ def sin_cos_graph(pixels, section, func, back_color, front_color):
     if func != math.sin and func != math.cos:
         print('Only sin() and cos() are supported!')
         return
-    fill_pixels(pixels, section, back_color)
+    fill_pixels(pixels, pin, section, back_color)
     t = 0
     for x in range(0, 6):
         y = func(t)
@@ -147,13 +167,15 @@ class BacklightControl:
             self.__init_pixels(strips[strip])
         else:
             print("Strip not found!")
+        print("Initialized strip = ")
+        print(strip)
         self.backlight_commands = {
-            'ON': lambda: fill_pixels(self.pixels, self.pin, default_color),
-            'OFF': lambda: fill_pixels(self.pixels, self.pin, no_color),
-            'TALK': lambda: talk(self.pixels, self.pin, 'normal'),
-            'PLUGGED_IN': lambda: talk(self.pixels, self.pin, 'plugged_in'),
-            'BLINK_NORMAL': lambda: blink(self.pixels, self.pin, 'normal'),
-            'BLINK_PLUGGED_IN': lambda: blink(self.pixels, self.pin, 'plugged_in')
+            'ON': lambda: fill_pixels(self.pixels, self.pin, self.section, default_color),
+            'OFF': lambda: fill_pixels(self.pixels, self.pin, self.section, no_color),
+            'TALK': lambda: talk(self.pixels, self.pin, self.section, 'normal'),
+            'PLUGGED_IN': lambda: talk(self.pixels, self.pin, self.section, 'plugged_in'),
+            'BLINK_NORMAL': lambda: blink(self.pixels, self.pin, self.section, 'normal'),
+            'BLINK_PLUGGED_IN': lambda: blink(self.pixels, self.pin, self.section, 'plugged_in')
         }
 
     def __del__(self):
