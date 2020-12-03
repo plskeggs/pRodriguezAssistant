@@ -26,7 +26,6 @@ pin = None
 pixels = None
 ORDER = neopixel.GRB
 initialized = False
-all_pixels = None
 
 default_color = (243, 253, 0)
 no_color = (0, 0, 0)
@@ -37,7 +36,8 @@ revert_row1 = {0: 5, 1: 4, 2: 3, 3: 2, 4: 1, 5: 0}
 
 is_talking = False
 
-def fill_pixels(pixels, pin, section, color):
+def fill_pixels(section, color):
+    global pixels
     global eyes_section
     global initialized
     if initialized == False:
@@ -45,22 +45,21 @@ def fill_pixels(pixels, pin, section, color):
         return
     if section == eyes_section:
         color = tuple(int(i * eye_leds[2]) for i in color)
-        all_pixels[mouth_leds[1]] = color
+        pixels[mouth_leds[1]] = color
     else:
         color = tuple(int(i * mouth_leds[2]) for i in color)
         for i in range(0, mouth_leds[1]):
-            all_pixels[i] = color
+            pixels[i] = color
     print("pixels = ")
-    print(all_pixels)
-    print("pin = ")
-    print(pin)
+    print(pixels)
     print("section = ")
     print(section)
     print("color = ")
     print(color)
-    all_pixels.show()
+    pixels.show()
 
-def blink(pixels, pin, section, mode):
+def blink(section, mode):
+    global pixels
     global eyes_section
     global initialized
     if initialized == False:
@@ -79,8 +78,6 @@ def blink(pixels, pin, section, mode):
         phase_2_color = default_color
         period = 0.25
 
-    print("pin = ")
-    print(pin)
     print("section = ")
     print(section)
     print("phase_1_color = ")
@@ -89,13 +86,14 @@ def blink(pixels, pin, section, mode):
     print(phase_2_color)
     t = 0
     while t < 30:  # maximum answer length to prevent infinite loop
-        fill_pixels(pixels, pin, section, phase_1_color)
+        fill_pixels(section, phase_1_color)
         time.sleep(period)
-        fill_pixels(pixels, pin, section, phase_2_color)
+        fill_pixels(section, phase_2_color)
         time.sleep(period)
     t += period * 4
 
-def talk(pixels, pin, section, mode):
+def talk(section, mode):
+    global pixels
     global mouth_section
     global initialized
     if initialized == False:
@@ -114,10 +112,6 @@ def talk(pixels, pin, section, mode):
         front_color = default_color
         period = 0.25
 
-    print("pixels = ")
-    print(pixels)
-    print("pin = ")
-    print(pin)
     print("section = ")
     print(section)
     print("front_color = ")
@@ -126,26 +120,27 @@ def talk(pixels, pin, section, mode):
     print(back_color)
     t = 0
     while t < 30: # maximum answer length to prevent infinite loop
-        fill_pixels(pixels, pin, section, back_color)
+        fill_pixels(section, back_color)
         for i in range(6, 12):
-            all_pixels[i] = front_color
-        all_pixels.show()
+            pixels[i] = front_color
+        pixels.show()
         time.sleep(period)
 
-        sin_cos_graph(pixels, pin, section, math.cos, back_color, front_color)
+        sin_cos_graph(section, math.cos, back_color, front_color)
         time.sleep(period)
 
-        fill_pixels(pixels, pin, section, back_color)
+        fill_pixels(section, back_color)
         for i in range(6, 12):
-            all_pixels[i] = front_color
-        all_pixels.show()
+            pixels[i] = front_color
+        pixels.show()
         time.sleep(period)
 
-        sin_cos_graph(pixels, pin, section, math.sin, back_color, front_color)
+        sin_cos_graph(section, math.sin, back_color, front_color)
         time.sleep(period)
         t += period * 4
 
-def sin_cos_graph(pixels, pin, section, func, back_color, front_color):
+def sin_cos_graph(section, func, back_color, front_color):
+    global pixels
     global mouth_section
     if section != mouth_section:
         print('Eyes do not support talk command!')
@@ -153,7 +148,7 @@ def sin_cos_graph(pixels, pin, section, func, back_color, front_color):
     if func != math.sin and func != math.cos:
         print('Only sin() and cos() are supported!')
         return
-    fill_pixels(pixels, pin, section, back_color)
+    fill_pixels(section, back_color)
     t = 0
     for x in range(0, 6):
         y = func(t)
@@ -166,13 +161,12 @@ def sin_cos_graph(pixels, pin, section, func, back_color, front_color):
         else:
             i = 2
         c = i * 6 + j
-        all_pixels[c] = front_color
+        pixels[c] = front_color
         t += 1.57
-    all_pixels.show()
+    pixels.show()
 
 class BacklightControl:
     def __init__(self, strip):
-        self.pixels = None
         if strip in strips:
             self.__init_pixels(strips[strip])
         else:
@@ -180,16 +174,21 @@ class BacklightControl:
         print("Initialized strip = ")
         print(strip)
         self.backlight_commands = {
-            'ON': lambda: fill_pixels(self.pixels, self.pin, self.section, default_color),
-            'OFF': lambda: fill_pixels(self.pixels, self.pin, self.section, no_color),
-            'TALK': lambda: talk(self.pixels, self.pin, self.section, 'normal'),
-            'PLUGGED_IN': lambda: talk(self.pixels, self.pin, self.section, 'plugged_in'),
-            'BLINK_NORMAL': lambda: blink(self.pixels, self.pin, self.section, 'normal'),
-            'BLINK_PLUGGED_IN': lambda: blink(self.pixels, self.pin, self.section, 'plugged_in')
+            'ON': lambda: fill_pixels(self.section, default_color),
+            'OFF': lambda: fill_pixels(self.section, no_color),
+            'TALK': lambda: talk(self.section, 'normal'),
+            'PLUGGED_IN': lambda: talk(self.section, 'plugged_in'),
+            'BLINK_NORMAL': lambda: blink(self.section, 'normal'),
+            'BLINK_PLUGGED_IN': lambda: blink(self.section, 'plugged_in')
         }
 
     def __del__(self):
-        self.pixels.deinit()
+        global pixels
+        global initialized
+        if initialized:
+            print("deinitializing NeoPixels!")
+            pixels.deinit()
+            initialized = False
 
     def exec_cmd(self, command):
         if command in self.backlight_commands:
@@ -199,18 +198,14 @@ class BacklightControl:
             return p
 
     def __init_pixels(self, leds):
-        global all_pixels
+        global pixels
         global initialized
         self.section = leds[3]
-        self.pin = all_leds[0]
         print("leds = ")
         print(leds)
         print("initialized section = %d" % self.section)
-        print("set pin =")
-        print(self.pin)
         if initialized == False:
             print("initializing NeoPixels!")
-            all_pixels = neopixel.NeoPixel(all_leds[0], all_leds[1], brightness=all_leds[2], auto_write=False, pixel_order=ORDER)
+            pixels = neopixel.NeoPixel(all_leds[0], all_leds[1], brightness=all_leds[2], auto_write=False, pixel_order=ORDER)
             initialized = True
-        self.pixels = all_pixels
 
