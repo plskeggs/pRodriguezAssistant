@@ -192,6 +192,10 @@ class BacklightControl:
         global all_pixels
         self.section = leds[3]
         self.pin = all_leds[0]
+        print("leds = ")
+        print(leds)
+        print("initialized section = %d" % self.section)
+        print("set pin = %d" % self.pin)
         if all_pixels == None:
             print("ERROR!!!")
         self.pixels = all_pixels
