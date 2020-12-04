@@ -36,7 +36,7 @@ blue = (0,0,255)
 last_eye_color = no_color
 revert_row1 = {0: 5, 1: 4, 2: 3, 3: 2, 4: 1, 5: 0}
 
-fix_eyes = False
+fix_eyes = True
 is_talking = False
 
 def fill_pixels(section, color):
@@ -60,8 +60,11 @@ def fill_pixels(section, color):
         for i in range(0, mouth_leds[1]):
             pixels[i] = color
         if fix_eyes:
+            print("fixing eyes")
             pixels[mouth_leds[1]] = last_eye_color
             pixels[mouth_leds[1] + 1] = last_eye_color
+        else:
+            print("not fixing eyes")
     print("pixels = ")
     print(pixels)
     print("section = ")
@@ -105,7 +108,7 @@ def blink(section, mode):
         time.sleep(period)
         fill_pixels(section, phase_2_color)
         time.sleep(period)
-    t += period * 4
+        t += period * 4
     fill_pixels(section, no_color)
     fix_eyes = True
 
