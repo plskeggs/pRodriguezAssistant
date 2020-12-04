@@ -33,6 +33,7 @@ no_color = (16, 16, 16)
 orange = (255,165,0)
 darkorange = (255,140,0)
 blue = (0,0,255)
+last_eye_color = (0, 0, 0)
 revert_row1 = {0: 5, 1: 4, 2: 3, 3: 2, 4: 1, 5: 0}
 
 is_talking = False
@@ -41,17 +42,21 @@ def fill_pixels(section, color):
     global pixels
     global eyes_section
     global initialized
+    global last_eye_color
     if initialized == False:
         print("NOT INITIALIZED!")
         return
     if section == eyes_section:
         color = tuple(int(i * eyes_leds[2]) for i in color)
+        last_eye_color = color
         pixels[mouth_leds[1]] = color
         pixels[mouth_leds[1] + 1] = color
     else:
         color = tuple(int(i * mouth_leds[2]) for i in color)
         for i in range(0, mouth_leds[1]):
             pixels[i] = color
+        pixels[mouth_leds[1]] = last_eye_color
+        pixels[mouth_leds[1] + 1] = last_eye_color
     print("pixels = ")
     print(pixels)
     print("section = ")
@@ -64,6 +69,7 @@ def blink(section, mode):
     global pixels
     global eyes_section
     global initialized
+    global last_eye_color
     if initialized == False:
         print("NOT INITIALIZED!")
         return
@@ -167,6 +173,7 @@ def sin_cos_graph(section, func, back_color, front_color):
         pixels[c] = front_color
         t += 1.57
     pixels.show()
+    fill_pixels(eyes_section, last_eye_color)
 
 class BacklightControl:
     def __init__(self, strip):
