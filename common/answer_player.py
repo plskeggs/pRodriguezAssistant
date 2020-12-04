@@ -3,6 +3,7 @@
 import subprocess
 import random
 import time
+from pathlib import Path
 
 class AnswerPlayer:
     lang = 'en'
@@ -40,6 +41,19 @@ class AnswerPlayer:
             eyes_bl_proc.terminate()
             self.eyes_bl.exec_cmd('ON')
 
+    def is_path_valid(self, command):
+        answer = self.audio_files.get(command)
+        if type(answer) is tuple:
+            a_count = len(answer)
+            if a_count > 1:
+                answer = answer[int(round(time.time() * 1000)) % a_count]
+        else:
+            answer = answer
+        path = Path(self.audio_path + AnswerPlayer.lang + '/' + answer + '.wav')
+        if path.exists() and path.is_file():
+            return True
+        return False
+
     def play_answer(self, command):
         answer = self.audio_files.get(command)
         if answer != None:
@@ -66,8 +80,13 @@ class AnswerPlayer:
     def play_random(self):
         try:
             item_list = list(self.audio_files.items())
-            answer = random.choice(item_list)
-            print(answer)
+            for x in range(10):
+                answer = random.choice(item_list)
+                print(answer)
+                if is_path_valid(answer):
+                    break
+                print("answer not valid")
+            print("answer valid")
             self.play_answer(answer[0])
         except Exception as err:
             print("exception: ", err)
