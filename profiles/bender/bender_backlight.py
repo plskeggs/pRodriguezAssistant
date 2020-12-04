@@ -33,9 +33,10 @@ no_color = (16, 16, 16)
 orange = (255,165,0)
 darkorange = (255,140,0)
 blue = (0,0,255)
-last_eye_color = (0, 0, 0)
+last_eye_color = no_color
 revert_row1 = {0: 5, 1: 4, 2: 3, 3: 2, 4: 1, 5: 0}
 
+fix_eyes = False
 is_talking = False
 
 def fill_pixels(section, color):
@@ -43,20 +44,24 @@ def fill_pixels(section, color):
     global eyes_section
     global initialized
     global last_eye_color
+    global fix_eyes
     if initialized == False:
         print("NOT INITIALIZED!")
         return
     if section == eyes_section:
-        color = tuple(int(i * eyes_leds[2]) for i in color)
+        print("fill eyes")
         last_eye_color = color
+        color = tuple(int(i * eyes_leds[2]) for i in color)
         pixels[mouth_leds[1]] = color
         pixels[mouth_leds[1] + 1] = color
     else:
+        print("fill mouth")
         color = tuple(int(i * mouth_leds[2]) for i in color)
         for i in range(0, mouth_leds[1]):
             pixels[i] = color
-        pixels[mouth_leds[1]] = last_eye_color
-        pixels[mouth_leds[1] + 1] = last_eye_color
+        if fix_eyes:
+            pixels[mouth_leds[1]] = last_eye_color
+            pixels[mouth_leds[1] + 1] = last_eye_color
     print("pixels = ")
     print(pixels)
     print("section = ")
@@ -69,7 +74,7 @@ def blink(section, mode):
     global pixels
     global eyes_section
     global initialized
-    global last_eye_color
+    global fix_eyes
     if initialized == False:
         print("NOT INITIALIZED!")
         return
@@ -77,6 +82,7 @@ def blink(section, mode):
         print('Teeth do not support blink command!')
         return
 
+    fix_eyes = False
     if mode == 'plugged_in':
         phase_1_color = darkorange
         phase_2_color = blue
@@ -86,6 +92,7 @@ def blink(section, mode):
         phase_2_color = default_color
         period = 0.5
 
+    print("blink")
     print("section = ")
     print(section)
     print("phase_1_color = ")
@@ -100,10 +107,12 @@ def blink(section, mode):
         time.sleep(period)
     t += period * 4
     fill_pixels(section, no_color)
+    fix_eyes = True
 
 def talk(section, mode):
     global pixels
     global mouth_section
+    global eyes_section
     global initialized
     if initialized == False:
         print("NOT INITIALIZED!")
@@ -113,10 +122,12 @@ def talk(section, mode):
         return
 
     if mode == 'plugged_in':
+        print("talk plugged_in")
         back_color = darkorange
         front_color = blue
         period = 0.1
     else:
+        print("talk normal")
         back_color = no_color
         front_color = default_color
         period = 0.25
@@ -150,7 +161,10 @@ def talk(section, mode):
 
 def sin_cos_graph(section, func, back_color, front_color):
     global pixels
+    global eyes_section
     global mouth_section
+    global last_eye_color
+    global fix_eyes
     if section != mouth_section:
         print('Eyes do not support talk command!')
         return
@@ -158,6 +172,10 @@ def sin_cos_graph(section, func, back_color, front_color):
         print('Only sin() and cos() are supported!')
         return
     fill_pixels(section, back_color)
+    if func == math.sin:
+        print("sin_graph")
+    else:
+        print("cos_graph")
     t = 0
     for x in range(0, 6):
         y = func(t)
@@ -173,7 +191,8 @@ def sin_cos_graph(section, func, back_color, front_color):
         pixels[c] = front_color
         t += 1.57
     pixels.show()
-    fill_pixels(eyes_section, last_eye_color)
+    if fix_eyes:
+        fill_pixels(eyes_section, last_eye_color)
 
 class BacklightControl:
     def __init__(self, strip):
