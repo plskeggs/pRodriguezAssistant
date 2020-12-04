@@ -83,7 +83,7 @@ class AnswerPlayer:
             for x in range(10):
                 answer = random.choice(item_list)
                 print(answer)
-                if is_path_valid(answer):
+                if self.is_path_valid(answer):
                     break
                 print("answer not valid")
             print("answer valid")
