@@ -65,7 +65,7 @@ def fill_pixels(section, color):
             pixels[mouth_leds[1] + 1] = last_eye_color
         else:
             print("not fixing eyes")
-    print('pixels:{}, section:{}, color:{}', pixels, section, color)
+    print('pixels:{}, section:{}, color:{}'.format(pixels, section, color))
     pixels.show()
 
 def blink(section, mode):
