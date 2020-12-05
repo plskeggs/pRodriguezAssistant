@@ -125,7 +125,7 @@ def talk(section, mode):
         front_color = default_color
         period = 0.25
 
-    print('talk: section:{}, phase_1_color:{}, phase_2_color:{}, pixels:{}'.format(section_str[section], phase_1_color, phase_2_color, pixels))
+    print('talk: section:{}, back_color:{}, front_color:{}, pixels:{}'.format(section_str[section], back_color, front_color, pixels))
     t = 0
     while t < 30: # maximum answer length to prevent infinite loop
         print('talk; fix_eyes:{}'.format(fix_eyes))
