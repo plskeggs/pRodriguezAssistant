@@ -49,10 +49,17 @@ class AnswerPlayer:
                 answer = answer[int(round(time.time() * 1000)) % a_count]
         else:
             answer = answer
-        path = Path(self.audio_path + AnswerPlayer.lang + '/' + answer + '.wav')
-        if path.exists() and path.is_file():
-            return True
-        return False
+        valid = False
+        try:
+            file = self.audio_path + AnswerPlayer.lang + '/' + answer + '.wav'
+            print("file: " + file)
+            path = Path(file)
+            if path.exists() and path.is_file():
+                valid = True
+        except Exception as err:
+            print("exception")
+            print(err)
+        return valid
 
     def play_answer(self, command):
         answer = self.audio_files.get(command)
