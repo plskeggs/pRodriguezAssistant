@@ -65,12 +65,7 @@ def fill_pixels(section, color):
             pixels[mouth_leds[1] + 1] = last_eye_color
         else:
             print("not fixing eyes")
-    print("pixels = ")
-    print(pixels)
-    print("section = ")
-    print(section)
-    print("color = ")
-    print(color)
+    print("pixels:{}, section:{}, color:{}", pixels, section, color)
     pixels.show()
 
 def blink(section, mode):
@@ -96,12 +91,12 @@ def blink(section, mode):
         period = 0.5
 
     print("blink")
-    print("section = ")
-    print(section)
-    print("phase_1_color = ")
-    print(phase_1_color)
-    print("phase_2_color = ")
-    print(phase_2_color)
+    #print("section = ")
+    #print(section)
+    #print("phase_1_color = ")
+    #print(phase_1_color)
+    #print("phase_2_color = ")
+    #print(phase_2_color)
     t = 0
     while t < 30:  # maximum answer length to prevent infinite loop
         fill_pixels(section, phase_1_color)
@@ -135,12 +130,12 @@ def talk(section, mode):
         front_color = default_color
         period = 0.25
 
-    print("section = ")
-    print(section)
-    print("front_color = ")
-    print(front_color)
-    print("back_color = ")
-    print(back_color)
+    #print("section = ")
+    #print(section)
+    #print("front_color = ")
+    #print(front_color)
+    #print("back_color = ")
+    #print(back_color)
     t = 0
     while t < 30: # maximum answer length to prevent infinite loop
         fill_pixels(section, back_color)
@@ -233,9 +228,9 @@ class BacklightControl:
         global pixels
         global initialized
         self.section = leds[3]
-        print("leds = ")
-        print(leds)
-        print("initialized section = %d" % self.section)
+        #print("leds = ")
+        #print(leds)
+        #print("initialized section = %d" % self.section)
         if initialized == False:
             print("initializing NeoPixels!")
             pixels = neopixel.NeoPixel(all_leds[0], all_leds[1], brightness=all_leds[2], auto_write=False, pixel_order=ORDER)

@@ -52,7 +52,7 @@ class AnswerPlayer:
         valid = False
         try:
             file = self.audio_path + AnswerPlayer.lang + '/' + answer + '.wav'
-            print("file: " + file)
+            print('audio_path:{}, lang:{}, answer:{}, path:{}'.format(self.audio_path, AnswerPlayer.lang, answer, file))
             path = Path(file)
             if path.exists() and path.is_file():
                 valid = True
