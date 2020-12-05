@@ -36,6 +36,7 @@ blue = (0,0,255)
 last_eye_color = no_color
 revert_row1 = {0: 5, 1: 4, 2: 3, 3: 2, 4: 1, 5: 0}
 
+section_str = ['mouth', 'eyes', 'full']
 fix_eyes = True
 is_talking = False
 
@@ -49,23 +50,21 @@ def fill_pixels(section, color):
         print("NOT INITIALIZED!")
         return
     if section == eyes_section:
-        print("fill eyes")
         last_eye_color = color
         color = tuple(int(i * eyes_leds[2]) for i in color)
         pixels[mouth_leds[1]] = color
         pixels[mouth_leds[1] + 1] = color
     else:
-        print("fill mouth")
         color = tuple(int(i * mouth_leds[2]) for i in color)
         for i in range(0, mouth_leds[1]):
             pixels[i] = color
         if fix_eyes:
-            print("fixing eyes")
+            #print("fixing eyes")
             pixels[mouth_leds[1]] = last_eye_color
             pixels[mouth_leds[1] + 1] = last_eye_color
-        else:
-            print("not fixing eyes")
-    print('pixels:{}, section:{}, color:{}'.format(pixels, section, color))
+        #else:
+        #    print("not fixing eyes")
+    print('section:{}, color:{}, pixels:{}'.format(section_str[section], color, pixels))
     pixels.show()
 
 def blink(section, mode):
@@ -84,26 +83,21 @@ def blink(section, mode):
     if mode == 'plugged_in':
         phase_1_color = darkorange
         phase_2_color = blue
-        period = 0.5
+        period = 0.1
     else:
         phase_1_color = no_color
         phase_2_color = default_color
-        period = 0.5
+        period = 0.25
 
-    print("blink")
-    #print("section = ")
-    #print(section)
-    #print("phase_1_color = ")
-    #print(phase_1_color)
-    #print("phase_2_color = ")
-    #print(phase_2_color)
+    print('blink: section:{}, phase_1_color:{}, phase_2_color:{}, pixels:{}'.format(section_str[section], phase_1_color, phase_2_color, pixels))
     t = 0
     while t < 30:  # maximum answer length to prevent infinite loop
+        print('blink')
         fill_pixels(section, phase_1_color)
         time.sleep(period)
         fill_pixels(section, phase_2_color)
         time.sleep(period)
-        t += period * 4
+        t += period * 2
     fill_pixels(section, no_color)
     fix_eyes = True
 
@@ -112,6 +106,7 @@ def talk(section, mode):
     global mouth_section
     global eyes_section
     global initialized
+    global fix_eyes
     if initialized == False:
         print("NOT INITIALIZED!")
         return
@@ -130,14 +125,10 @@ def talk(section, mode):
         front_color = default_color
         period = 0.25
 
-    #print("section = ")
-    #print(section)
-    #print("front_color = ")
-    #print(front_color)
-    #print("back_color = ")
-    #print(back_color)
+    print('talk: section:{}, phase_1_color:{}, phase_2_color:{}, pixels:{}'.format(section_str[section], phase_1_color, phase_2_color, pixels))
     t = 0
     while t < 30: # maximum answer length to prevent infinite loop
+        print('talk; fix_eyes:{}'.format(fix_eyes))
         fill_pixels(section, back_color)
         for i in range(6, 12):
             pixels[i] = front_color

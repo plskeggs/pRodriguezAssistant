@@ -130,6 +130,11 @@ def main():
     print("turn eyes off...")
     if profile.eyes_bl:
         profile.eyes_bl.exec_cmd('OFF')
+    time.sleep(0.15)
+    print("turn mouth off...")
+    if profile.mouth_bl:
+        profile.mouth_bl.exec_cmd('OFF')
+
     time.sleep(3)
 
     if (fsm_state == 4):
