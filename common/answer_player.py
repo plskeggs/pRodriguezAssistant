@@ -43,6 +43,8 @@ class AnswerPlayer:
 
     def is_path_valid(self, command):
         answer = self.audio_files.get(command)
+        if answer == None:
+            return False
         if type(answer) is tuple:
             a_count = len(answer)
             if a_count > 1:
@@ -89,8 +91,8 @@ class AnswerPlayer:
             item_list = list(self.audio_files.items())
             for x in range(10):
                 answer = random.choice(item_list)
-                print(answer)
-                if self.is_path_valid(answer):
+                print(answer[0])
+                if self.is_path_valid(answer[0]):
                     break
                 print("answer not valid")
             print("answer valid")
